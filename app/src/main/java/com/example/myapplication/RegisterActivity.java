@@ -18,6 +18,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.sdsmdg.tastytoast.TastyToast;
 
 import butterknife.BindView;
@@ -35,6 +37,7 @@ public class RegisterActivity extends AppCompatActivity {
     TextView alreadyHaveAccount;
     private FirebaseAuth mAuth;
     private ProgressDialog loadingBar;
+    private DatabaseReference rootRef;
 
 
     @Override
@@ -43,6 +46,7 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register);
         ButterKnife.bind(this);
         mAuth = FirebaseAuth.getInstance();
+        rootRef = FirebaseDatabase.getInstance().getReference();
         loadingBar = new ProgressDialog(RegisterActivity.this);
 
         alreadyHaveAccount.setOnClickListener(new View.OnClickListener() {
@@ -83,7 +87,10 @@ public class RegisterActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
-                                SendUserToLoginActivity();
+                                String currentUserId = mAuth.getCurrentUser().getUid();
+                                rootRef.child("Users").child(currentUserId).setValue("");
+
+                                SendUserToMainActivity();
                                 Toast.makeText(RegisterActivity.this,
                                         "Account Created Successfully",
                                         Toast.LENGTH_SHORT).show();
@@ -104,6 +111,13 @@ public class RegisterActivity extends AppCompatActivity {
     private void SendUserToLoginActivity() {
         Intent LoginIntent = new Intent(RegisterActivity.this, LoginActivity.class);
         startActivity(LoginIntent);
+        finish();
+    }
+
+    private void SendUserToMainActivity() {
+        Intent MainIntent = new Intent(RegisterActivity.this, MainActivity.class);
+        MainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(MainIntent);
         finish();
     }
 }
