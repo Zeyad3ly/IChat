@@ -51,6 +51,7 @@
                         android:theme="@style/TextLabel">
 
                         <EditText
+                            android:padding="8dp"
                             android:id="@+id/register_email"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -79,6 +80,7 @@
                             android:id="@+id/register_password"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:padding="8dp"
                             android:hint="Password"
                             android:inputType="textPassword"
                             android:textColor="#f0f7f4"
@@ -102,7 +104,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:layout_marginBottom="3dp"
+                    android:layout_marginBottom="8dp"
+                    android:paddingTop="8dp"
                     android:gravity="clip_vertical"
                     android:text="Already have account? login here"
                     android:textColor="@android:color/black"

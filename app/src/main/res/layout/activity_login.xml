@@ -114,8 +114,9 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="5dp"
+                android:paddingTop="8dp"
                 android:text="Forgot your password?"
-                android:textColor="#9a9a9a"
+                android:textColor="@color/colorAccent"
                 android:textSize="12sp" />
             <TextView
                 android:id="@+id/need_new_account"
@@ -123,10 +124,12 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:text="New Account? Sign up here"
+                android:paddingTop="8dp"
                 android:layout_marginBottom="3dp"
-                android:textColor="#9a9a9a"
+                android:textColor="@color/colorAccent"
                 android:gravity="clip_vertical"
-                android:textSize="12sp" />
+
+                android:textSize="16sp" />
 
 
         </LinearLayout>
