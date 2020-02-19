@@ -38,4 +38,6 @@ dependencies {
     annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.1'
     //Ui
     implementation 'com.sdsmdg.tastytoast:tastytoast:0.1.1'
+    //CircleImageView
+    implementation 'de.hdodenhof:circleimageview:3.1.0'
 }
