@@ -11,6 +11,10 @@
         android:title="Settings"
         app:showAsAction="never" />
     <item
+        android:id="@+id/main_create_group_option"
+        android:title="New Group"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/main_logot_option"
         android:title="Logout"
         app:showAsAction="never" />

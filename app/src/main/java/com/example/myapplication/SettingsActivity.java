@@ -19,24 +19,16 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.sdsmdg.tastytoast.TastyToast;
 
 import java.util.HashMap;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class SettingsActivity extends AppCompatActivity {
 
-    @BindView(R.id.set_profile_image)
-    CircleImageView setProfileImage;
-    @BindView(R.id.set_user_name)
-    EditText setUserName;
-    @BindView(R.id.set_profile_status)
-    EditText setProfileStatus;
-    @BindView(R.id.update_settings_button)
-    Button updateSettingsButton;
+    private Button UpdateAccountSettings;
+    private EditText userName, userStatus;
+    private CircleImageView userProfileImage;
     private String currentUserId;
     private FirebaseAuth mAuth;
     private DatabaseReference RootRef;
@@ -45,56 +37,19 @@ public class SettingsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
-        ButterKnife.bind(this);
         mAuth = FirebaseAuth.getInstance();
         currentUserId = mAuth.getCurrentUser().getUid();
         RootRef = FirebaseDatabase.getInstance().getReference();
-        updateSettingsButton.setOnClickListener(new View.OnClickListener() {
+        InitializeFields();
+        userName.setVisibility(View.INVISIBLE);
+        UpdateAccountSettings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 UpdateSettings();
             }
         });
-        setUserName.setVisibility(View.INVISIBLE);
+
         RetrieveUserInfo();
-    }
-
-
-    private void UpdateSettings() {
-        String name = setUserName.getText().toString();
-        String status = setProfileStatus.getText().toString();
-        if (TextUtils.isEmpty(name)) {
-            TastyToast.makeText(SettingsActivity.this, "You must provide a name",
-                    TastyToast.LENGTH_SHORT, TastyToast.WARNING).show();
-        } else if (TextUtils.isEmpty(status)) {
-            TastyToast.makeText(SettingsActivity.this, "You must provide a status",
-                    TastyToast.LENGTH_SHORT, TastyToast.WARNING).show();
-        } else {
-            HashMap<String, String> profileMap = new HashMap<>();
-            profileMap.put("uid", currentUserId);
-            profileMap.put("name", name);
-            profileMap.put("status", status);
-            RootRef.child("Users").child(currentUserId).setValue(profileMap)
-                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if (task.isSuccessful()) {
-                                SendUserToMainActivity();
-                                TastyToast.makeText(SettingsActivity.this,
-                                        "Profile Updated",
-                                        TastyToast.LENGTH_SHORT, TastyToast.SUCCESS).show();
-
-                            } else {
-                                String message = task.getException().toString();
-                                TastyToast.makeText(SettingsActivity.this,
-                                        "Error " + message,
-                                        TastyToast.LENGTH_SHORT, TastyToast.ERROR).show();
-                            }
-                        }
-
-                    });
-
-        }
     }
 
     private void RetrieveUserInfo() {
@@ -102,30 +57,27 @@ public class SettingsActivity extends AppCompatActivity {
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if ((dataSnapshot.exists()) && (dataSnapshot.hasChild("name") &&
-                                (dataSnapshot.hasChild("image")))) {
-                            String retrieveUserName = dataSnapshot.child("name").getValue()
-                                    .toString();
-                            String retrieveStatus = dataSnapshot.child("status").getValue()
-                                    .toString();
-                            String retrieveProfileImage = dataSnapshot.child("image").getValue()
-                                    .toString();
-                            setUserName.setText(retrieveUserName);
-                            setProfileStatus.setText(retrieveStatus);
-
-                        } else if ((dataSnapshot.exists()) && (dataSnapshot.hasChild("name"))) {
-                            String retrieveUserName = dataSnapshot.child("name").getValue()
-                                    .toString();
-                            String retrieveStatus = dataSnapshot.child("status").getValue()
-                                    .toString();
-                            setUserName.setText(retrieveUserName);
-                            setProfileStatus.setText(retrieveStatus);
-                        } else {
-                            setUserName.setVisibility(View.INVISIBLE);
-                            Toast.makeText(SettingsActivity.this,
-                                    "Please Setup your profile info", Toast.LENGTH_SHORT)
-                                    .show();
+                        if (dataSnapshot.exists() && (dataSnapshot.hasChild("name") &&
+                                (dataSnapshot.hasChild("image"))))
+                        {
+                            String RetrieveUserName=dataSnapshot.child("name").getValue().toString();
+                            String RetrieveStatus=dataSnapshot.child("status").getValue().toString();
+                            String RetriveProfileImage=dataSnapshot.child("image").getValue().toString();
+                            userName.setText(RetrieveUserName);
+                            userStatus.setText(RetrieveStatus);
+                        }else if (dataSnapshot.exists()&&(dataSnapshot.hasChild("name")))
+                        {
+                            String RetrieveUserName=dataSnapshot.child("name").getValue().toString();
+                            String RetrieveStatus=dataSnapshot.child("status").getValue().toString();
+                            userName.setText(RetrieveUserName);
+                            userStatus.setText(RetrieveStatus);
                         }
+                        else
+                            {
+                                userName.setVisibility(View.VISIBLE);
+                                Toast.makeText(SettingsActivity.this, "Update your info"
+                                        , Toast.LENGTH_SHORT).show();
+                            }
                     }
 
                     @Override
@@ -135,10 +87,51 @@ public class SettingsActivity extends AppCompatActivity {
                 });
     }
 
+
+    private void InitializeFields() {
+        UpdateAccountSettings = findViewById(R.id.update_settings_button);
+        userName = findViewById(R.id.set_user_name);
+        userStatus = findViewById(R.id.set_profile_status);
+        userProfileImage = findViewById(R.id.set_profile_image);
+    }
+
+    private void UpdateSettings() {
+        String setUserName = userName.getText().toString();
+        String setUserStatus = userStatus.getText().toString();
+        if (TextUtils.isEmpty(setUserName)) {
+            Toast.makeText(this, "Enter Name", Toast.LENGTH_SHORT).show();
+        }
+        if (TextUtils.isEmpty(setUserStatus)) {
+            Toast.makeText(this, "Enter status", Toast.LENGTH_SHORT).show();
+
+        } else {
+            HashMap<String, String> profileMap = new HashMap<>();
+            profileMap.put("uid", currentUserId);
+            profileMap.put("name", setUserName);
+            profileMap.put("status", setUserStatus);
+            RootRef.child("Users").child(currentUserId).setValue(profileMap)
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                SendUserToMainActivity();
+                                Toast.makeText(SettingsActivity.this, "Profile Updated"
+                                        , Toast.LENGTH_SHORT).show();
+                            } else {
+                                String message = task.getException().toString();
+                                Toast.makeText(SettingsActivity.this, "Error " + message
+                                        , Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+
+        }
+    }
+
     private void SendUserToMainActivity() {
-        Intent MainIntent = new Intent(SettingsActivity.this, MainActivity.class);
-        MainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(MainIntent);
+        Intent mainIntent = new Intent(SettingsActivity.this, MainActivity.class);
+        mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(mainIntent);
         finish();
     }
 }
